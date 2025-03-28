@@ -1,72 +1,85 @@
-// Get elements
-const searchBar = document.getElementById("search-bar");
-const addBookButton = document.getElementById("add-book");
-const bookTitleInput = document.getElementById("book-title");
-const bookAuthorInput = document.getElementById("book-author");
-const bookList = document.getElementById("book-list");
+// Initial sample data for books
+const books = [
+  {
+    title: "The Great Gatsby",
+    author: "F. Scott Fitzgerald",
+    cover:
+      "https://isbndb.com/blog/wp-content/uploads/2024/04/book-cover-image.jpg",
+  },
+  {
+    title: "1984",
+    author: "George Orwell",
+    cover:
+      "https://isbndb.com/blog/wp-content/uploads/2024/04/book-cover-image.jpg",
+  },
+  {
+    title: "To Kill a Mockingbird",
+    author: "Harper Lee",
+    cover:
+      "https://isbndb.com/blog/wp-content/uploads/2024/04/book-cover-image.jpg",
+  },
+];
 
-// Initial book list
-let books = [];
+// Function to display all books
+function displayBooks(bookList) {
+  const bookListContainer = document.getElementById("book-list");
+  bookListContainer.innerHTML = ""; // Clear existing content
 
-// Function to display books
-function displayBooks(filteredBooks) {
-  bookList.innerHTML = "";
-  filteredBooks.forEach((book) => {
-    const bookCard = document.createElement("div");
-    bookCard.classList.add("book-card");
+  bookList.forEach((book) => {
+    const bookItem = document.createElement("div");
+    bookItem.classList.add("book-item");
 
-    bookCard.innerHTML = `
-      <h3>${book.title}</h3>
-      <p>by ${book.author}</p>
-      <button onclick="removeBook(${book.id})">Remove</button>
-    `;
+    const bookCover = document.createElement("img");
+    bookCover.src = book.cover;
+    bookCover.alt = "Book Cover";
+    bookCover.classList.add("book-cover");
 
-    bookList.appendChild(bookCard);
+    const bookTitle = document.createElement("h3");
+    bookTitle.textContent = book.title;
+
+    const bookAuthor = document.createElement("p");
+    bookAuthor.textContent = book.author;
+
+    bookItem.appendChild(bookCover);
+    bookItem.appendChild(bookTitle);
+    bookItem.appendChild(bookAuthor);
+
+    bookListContainer.appendChild(bookItem);
   });
 }
 
-// Function to add book
-function addBook(title, author) {
-  const newBook = {
-    id: Date.now(),
-    title,
-    author,
-  };
-  books.push(newBook);
-  displayBooks(books);
-}
-
-// Remove a book
-function removeBook(id) {
-  books = books.filter((book) => book.id !== id);
-  displayBooks(books);
-}
-
-// Search books
-function searchBooks(query) {
+// Function to search books by title or author
+function searchBooks() {
+  const query = document.getElementById("search-bar").value.toLowerCase();
   const filteredBooks = books.filter(
     (book) =>
-      book.title.toLowerCase().includes(query.toLowerCase()) ||
-      book.author.toLowerCase().includes(query.toLowerCase())
+      book.title.toLowerCase().includes(query) ||
+      book.author.toLowerCase().includes(query)
   );
   displayBooks(filteredBooks);
 }
 
-// Event listeners
-addBookButton.addEventListener("click", () => {
-  const title = bookTitleInput.value;
-  const author = bookAuthorInput.value;
+// Function to add a new book
+document.getElementById("add-book").addEventListener("click", () => {
+  const title = document.getElementById("book-title").value;
+  const author = document.getElementById("book-author").value;
 
   if (title && author) {
-    addBook(title, author);
-    bookTitleInput.value = "";
-    bookAuthorInput.value = "";
+    const newBook = {
+      title: title,
+      author: author,
+      cover:
+        "https://isbndb.com/blog/wp-content/uploads/2024/04/book-cover-image.jpg", // Placeholder cover image
+    };
+
+    books.push(newBook);
+    displayBooks(books);
+    document.getElementById("book-title").value = "";
+    document.getElementById("book-author").value = "";
+  } else {
+    alert("Please enter both a book title and author.");
   }
 });
 
-searchBar.addEventListener("input", (e) => {
-  searchBooks(e.target.value);
-});
-
-// Initial call to display books (empty initially)
+// Initial display of books when the page loads
 displayBooks(books);
